@@ -3,207 +3,331 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pemain Well Played</title>
+  <title>Well Played Squad</title>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #0d0d0d;
+      background: linear-gradient(135deg, #1d1d1d, #0f0f0f);
       color: #fff;
+      overflow-x: hidden;
     }
     header {
       text-align: center;
-      padding: 30px 20px 20px;
-      background: #1c1c1c;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      padding: 50px 20px 40px;
+      background: rgba(30, 30, 30, 0.9);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     }
     header img {
-      width: 100px;
+      width: 120px;
       border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    header img:hover {
+      transform: scale(1.1);
     }
     h1 {
-      margin: 10px 0 5px;
-      font-size: 28px;
-      color: #ffe600;
+      margin: 20px 0 10px;
+      font-size: 36px;
+      color: #ffcc00;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
     }
     p.squad-desc {
       color: #ccc;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
-      font-size: 15px;
+      font-size: 18px;
+      line-height: 1.5;
+      font-weight: 300;
     }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px;
-    }
-
-    .controls input, .controls select {
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      outline: none;
-    }
-
     .card-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
+      padding: 40px;
+      margin: 0 20px;
+      justify-items: center;
     }
-
     .card {
-      background: #1a1a1a;
-      border-radius: 10px;
+      background: rgba(40, 40, 40, 0.7);
+      border: 1px solid #444;
+      border-radius: 12px;
       padding: 20px;
       width: 280px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-      transition: transform 0.2s;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(10px);
+      text-align: center;
     }
-
     .card:hover {
-      transform: scale(1.05);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.8);
     }
-
     .card img {
       width: 100%;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      transition: transform 0.3s ease;
     }
-
+    .card img:hover {
+      transform: scale(1.05);
+    }
     .card h2 {
-      margin: 10px 0 5px;
-      font-size: 20px;
+      margin: 10px 0;
+      font-size: 22px;
+      font-weight: bold;
     }
-
     .role {
       font-style: italic;
       color: #00bcd4;
+      font-weight: 600;
     }
-
-    .stats {
-      font-size: 14px;
-      color: #ccc;
-      margin-top: 8px;
-    }
-
     footer {
       text-align: center;
-      padding: 15px;
-      background: #1f1f1f;
+      padding: 20px;
+      background: #1c1c1c;
+      font-size: 16px;
+      color: #aaa;
+    }
+
+    /* Modal styling */
+    #playerModal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    #playerModal .modal-content {
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      color: white;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+      text-align: center;
+    }
+    #playerModal .modal-content img {
+      width: 80%;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    #closeModal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 30px;
+      cursor: pointer;
+      color: #ff4444;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Loading screen */
+    #loader {
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0f0f0f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loader-circle {
+      border: 4px solid #444;
+      border-top: 4px solid #ffcc00;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1.5s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Zoom overlay */
+    #zoomOverlay {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #zoomOverlay img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Loading screen -->
+  <div id="loader">
+    <div class="loader-circle"></div>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="background-music" loop autoplay>
+    <source src="https://files.catbox.moe/5rxtt7.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
   <header>
-    <img src="https://files.catbox.moe/rcx5h8.jpg" alt="ONIC Logo">
+    <img src="https://files.catbox.moe/rcx5h8.jpg" alt="Logo Squad">
     <h1>Well Played</h1>
     <p class="squad-desc">Well Played adalah Squad Mobile Legends papan atas asal Indonesia yang dikenal dengan strategi disiplin, rotasi cepat, dan individu kuat di setiap role.</p>
   </header>
 
-  <div class="controls">
-    <input type="text" id="search" placeholder="Cari pemain...">
-    <select id="roleFilter">
-      <option value="">Semua Role</option>
-      <option value="Jungler">Jungler</option>
-      <option value="Roamer">Roamer</option>
-      <option value="Gold Laner">Gold Laner</option>
-      <option value="Midlaner">Midlaner</option>
-      <option value="EXP Laner">EXP Laner</option>
-    </select>
+  <div class="card-container">
+    <!-- Player 1 -->
+    <div class="card" data-aos="fade-up"
+         data-name="Superkenn"
+         data-role="Midlaner"
+         data-hero="Vexana, Novaria, Cecilion"
+         data-image="https://files.catbox.moe/o15mra.jpg">
+      <img src="https://files.catbox.moe/amd305.jpg" alt="Superkenn ML Profile">
+      <h2>Superkenn</h2>
+      <p class="role">Midlaner</p>
+      <p>Hero Favorit: Vexana, Novaria, Cecilion</p>
+    </div>
+    <!-- Player 2 -->
+    <div class="card" data-aos="fade-up"
+         data-name="Iball"
+         data-role="EXP Laner"
+         data-hero="Belerick, Gloo"
+         data-image="https://files.catbox.moe/hzts2k.jpg">
+      <img src="https://files.catbox.moe/u7oxsp.jpg" alt="Iball ML Profile">
+      <h2>Iball</h2>
+      <p class="role">EXP Laner</p>
+      <p>Hero Favorit: Belerick, Gloo</p>
+    </div>
+    <!-- Player 3 -->
+    <div class="card" data-aos="fade-up"
+         data-name="Somebody's"
+         data-role="Jungler"
+         data-hero="Yisunshin, Hayabusa, Karina"
+         data-image="https://files.catbox.moe/kyh44p.jpg">
+      <img src="https://files.catbox.moe/7lmfsg.jpg" alt="Somebody ML Profile">
+      <h2>Somebody's</h2>
+      <p class="role">Jungler</p>
+      <p>Hero Favorit: Yisunshin, Hayabusa, Karina</p>
+    </div>
+    <!-- Player 4 -->
+    <div class="card" data-aos="fade-up"
+         data-name="ThunderX"
+         data-role="Tank"
+         data-hero="Tigreal, Atlas, Kaja"
+         data-image="https://files.catbox.moe/anotherimage.jpg">
+      <img src="https://files.catbox.moe/anotherimage.jpg" alt="ThunderX ML Profile">
+      <h2>ThunderX</h2>
+      <p class="role">Tank</p>
+      <p>Hero Favorit: Tigreal, Atlas, Kaja</p>
+    </div>
+    <!-- Player 5 -->
+    <div class="card" data-aos="fade-up"
+         data-name="Riven"
+         data-role="Support"
+         data-hero="Rafaela, Angela, Mathilda"
+         data-image="https://files.catbox.moe/extraimage.jpg">
+      <img src="https://files.catbox.moe/extraimage.jpg" alt="Riven ML Profile">
+      <h2>Riven</h2>
+      <p class="role">Support</p>
+      <p>Hero Favorit: Rafaela, Angela, Mathilda</p>
+    </div>
   </div>
 
-  <main>
-    <div id="player-list" class="card-container"></div>
-  </main>
-
   <footer>
-    <p>&copy; 2025 Iball - ONIC Fanpage</p>
+    &copy; 2025 Iball - Well Played Squad
   </footer>
 
+  <!-- Modal -->
+  <div id="playerModal">
+    <div class="modal-content">
+      <span id="closeModal">&times;</span>
+      <img id="modalImage" src="">
+      <h2 id="modalName"></h2>
+      <p><strong>Role:</strong> <span id="modalRole"></span></p>
+      <p><strong>Hero Favorit:</strong> <span id="modalHero"></span></p>
+    </div>
+  </div>
+
+  <!-- Zoom Image Overlay -->
+  <div id="zoomOverlay">
+    <img id="zoomedImg" src="" alt="Zoomed ML Profile">
+  </div>
+
+  <!-- AOS & Modal Script -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script>
-    const players = [
-      {
-        name: "Superkenn",
-        role: "Jungler",
-        hero: "Lancelot, Fanny",
-        winrate: "82%",
-        image: "https://files.catbox.moe/rcx5h8.jpg"
-      },
-      {
-        name: "Iballl",
-        role: "EXP Laner",
-        hero: "Belerick, Gloo",
-        winrate: "75%",
-        image: "https://files.catbox.moe/u7oxsp.jpg"
-      },
-      {
-        name: "Alja",
-        role: "Gold Laner",
-        hero: "Beatrix, Karrie",
-        winrate: "77%",
-        image: "https://i.imgur.com/CW123ab.jpg"
-      },
-      {
-        name: "Aldi",
-        role: "Roamer",
-        hero: "Mathilda, Franco",
-        winrate: "70%",
-        image: "https://i.imgur.com/Samoht98.jpg"
-      },
-      {
-        name: "Alja",
-        role: "Midlaner",
-        hero: "Yve, Lylia",
-        winrate: "74%",
-        image: "https://i.imgur.com/SanzMid.jpg"
-      }
-    ];
+    AOS.init();
 
-    const container = document.getElementById("player-list");
-    const searchInput = document.getElementById("search");
-    const roleFilter = document.getElementById("roleFilter");
+    window.onload = function() {
+      setTimeout(function() {
+        document.getElementById('loader').style.display = 'none';
+      }, 500);
+    };
 
-    function renderPlayers(data) {
-      container.innerHTML = "";
-      data.forEach(player => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <img src="${player.image}" alt="${player.name}">
-          <h2>${player.name}</h2>
-          <p class="role">${player.role}</p>
-          <p>Hero Favorit: ${player.hero}</p>
-          <p class="stats">Winrate: ${player.winrate}</p>
-        `;
-        container.appendChild(card);
+    const cards = document.querySelectorAll('.card');
+    const modal = document.getElementById('playerModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalName = document.getElementById('modalName');
+    const modalRole = document.getElementById('modalRole');
+    const modalHero = document.getElementById('modalHero');
+
+    const zoomOverlay = document.getElementById('zoomOverlay');
+    const zoomedImg = document.getElementById('zoomedImg');
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        modal.style.display = 'flex';
+        const name = card.getAttribute('data-name');
+        const role = card.getAttribute('data-role');
+        const hero = card.getAttribute('data-hero');
+        const image = card.getAttribute('data-image');
+
+        modalImage.src = image;
+        modalName.textContent = name;
+        modalRole.textContent = role;
+        modalHero.textContent = hero;
       });
-    }
+    });
 
-    function filterPlayers() {
-      const keyword = searchInput.value.toLowerCase();
-      const selectedRole = roleFilter.value;
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
 
-      const filtered = players.filter(p => {
-        const matchName = p.name.toLowerCase().includes(keyword);
-        const matchRole = selectedRole ? p.role === selectedRole : true;
-        return matchName && matchRole;
-      });
+    // Zoom when click inside modal image
+    modalImage.addEventListener('click', () => {
+      zoomOverlay.style.display = 'flex';
+      zoomedImg.src = modalImage.src;
+    });
 
-      renderPlayers(filtered);
-    }
-
-    searchInput.addEventListener("input", filterPlayers);
-    roleFilter.addEventListener("change", filterPlayers);
-
-    renderPlayers(players);
+    zoomOverlay.addEventListener('click', () => {
+      zoomOverlay.style.display = 'none';
+    });
   </script>
 
 </body>
